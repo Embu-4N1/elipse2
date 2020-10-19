@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-import routes from './routes'
+import routes from './routes';
 
 import MathLive from 'mathlive/dist/mathlive.mjs';
 import Mathfield from 'mathlive/dist/vue-mathlive.mjs';

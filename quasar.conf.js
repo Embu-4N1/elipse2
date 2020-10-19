@@ -9,6 +9,7 @@
 
 module.exports = function (/* ctx */) {
   return {
+    untimeCompiler: true,
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
 
@@ -45,6 +46,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      vueCompiler: true,
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,
@@ -78,7 +80,7 @@ cfg.module.rules.push({
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -109,7 +111,7 @@ cfg.module.rules.push({
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
-      pwa: false
+      pwa: true
     },
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
