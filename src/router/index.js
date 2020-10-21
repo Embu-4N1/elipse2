@@ -6,7 +6,9 @@ import routes from './routes';
 import MathLive from 'mathlive/dist/mathlive.mjs';
 import Mathfield from 'mathlive/dist/vue-mathlive.mjs';
 
+import VueMathjax from 'vue-mathjax';
 
+Vue.use(VueMathjax)
 Vue.use(VueRouter)
 Vue.use(Mathfield, MathLive);
 
