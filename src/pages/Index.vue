@@ -1,13 +1,41 @@
 <template>
   <q-page class="flex flex-center">
-    <q-input outlined v-model="input" label="Valores (separados por vírgula)" />
-    <br />Resultado: {{ resultado }}
-    <q-card class="latex-card" :key="latex">
-      <div class="text-h6">Memória de Cálculo</div>
-      <q-card-section>
-        {{ latex }}
-      </q-card-section>
-    </q-card>
+    <div class="q-pa-md">
+      <div class="row">
+        <div class="col-12">
+          <p>Valores</p>
+          <div class="row">
+            <div class="col-12">
+              <q-input
+                outlined
+                v-model="input"
+                label="Valores (separados por vírgula)"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <q-separator />
+              <q-list bordered class="rounded-borders">
+                <q-expansion-item
+                  v-for="calc in calcs"
+                  expand-separator
+                  icon="calculate"
+                  :key="calc.id"
+                  :label="calc.label"
+                >
+                  <q-card>
+                    <q-card-section :key="calc.latex">
+                      {{ calc.latex }}
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+              </q-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -25,14 +53,23 @@ export default {
   created() {
     this.reloadEntradas();
   },
+  computed: {
+    calcs() {
+      let media = this.media()
+      return [
+        {label: 'Média: '  + media.result, id: 'media', latex: media.latex}
+      ]
+    }
+  },
   watch: {
     input(input) {
       this.entradas = input.trimRight(",").split(",");
-      this.latex = "";
-      this.resultado = this.media();
       this.saveEntradas();
+      this.latex = "";
+      console.log("Cleaning latex");
+      this.resultado = this.media();
     },
-    latex() {
+    calcs() {
       this.$nextTick().then(() => {
         this.reRender();
       });
@@ -68,17 +105,20 @@ export default {
         tamanho--;
       }
       var resultado = total / tamanho;
-      this.latex +=
+      let latex =
         "$$\\text{Quantidade de valores (n): " + tamanho + ".}\\\\$$";
-      this.latex += "$$\\underline{x} = \\frac{\\sum_{i=1}^{n} x_i}{n}\\\\$$";
-      this.latex +=
+      latex += "$$\\underline{x} = \\frac{\\sum_{i=1}^{n} x_i}{n}\\\\$$";
+      latex +=
         "$$\\underline{x} = \\frac{" +
         calculo.join("+", calculo) +
         "}{" +
         tamanho +
         "}\\\\$$";
-      this.latex += "$$\\underline{x} = " + resultado + "$$";
-      return resultado;
+      latex += "$$\\underline{x} = " + resultado + "$$";
+      return {
+        result: resultado,
+        latex: latex
+        };
     },
     mediaPonderada: function() {
       var total = 0;
