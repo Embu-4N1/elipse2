@@ -98,11 +98,13 @@ export default {
       let mediaPonderada = this.mediaPonderada();
       let mediana = this.mediana();
       let moda = this.moda();
+      let variancia = this.variancia();
       this.calcs = [
         {label: 'Média: '  + media.result, id: 'media', latex: media.latex},
         {label: 'Média Ponderada: '  + mediaPonderada.result, id: 'media-ponderada', latex: mediaPonderada.latex},
         {label: 'Médiana: '  + mediana.result, id: 'mediana', latex: mediana.latex},
         {label: 'Moda: '  + moda.result, id: 'moda', latex: moda.latex},
+        {label: 'Variância: '  + variancia.result, id: 'variancia', latex: variancia.latex},
       ];
     },
     saveInputs() {
@@ -270,9 +272,32 @@ export default {
         latex: "$$" + passos.join("") + "$$"
       }
     },
+
     variancia: function() {
-      this.resultado = this.variancia;
+      let total = 0;
+      let latex = '$$\\text {Calculando a média}(\\underline{x})$$';
+      let media = this.media();
+      latex += media.latex;
+      let calculo = [];
+      
+      for (let index in this.inputs) {
+        let entrada = this.inputs[index];
+        let valor = parseFloat(entrada);
+        total = total + (Math.pow(valor - media.result, 2));
+        calculo.push('(' + valor + ' - ' + media.result + ')^2');
+      }
+
+      let resultado = total / (this.inputs.length - 1); 
+      latex += '$$\\text {Agora vamos calcular a variância da amostra }(S^2)$$';
+      latex += '$$S^2 = \\frac{\\sum_{i=1}^{n} (x_i-\\underline{x})^2}{n-1}\\\\$$'; 
+      latex += '$$S^2 = \\frac{' + calculo.join('+', calculo) + '}{' + this.inputs.length + '-1}\\\\$$';
+      latex += '$$S^2 = ' + resultado + '$$';
+      return {
+        result: resultado,
+        latex: latex
+      }
     },
+
     desvio: function() {
       this.resultado = Math.sqrt(this.variancia);
       this.latex += "$$\\text {E por último o Desvio Padrão}(S)$$";
