@@ -3,7 +3,7 @@
     <div class="q-pa-md full-width">
       <div class="row">
         <div class="col-12">
-          <p>Valores</p>
+          <h2>Valores</h2>
           <div class="row">
             <div class="col-12">
               <q-input
@@ -16,36 +16,59 @@
               <q-input
                 outlined
                 v-model="weight"
-                label="Pesos (separados por vírgula)"
+                label="Pesos / Quantidade (separados por vírgula)"
               />
             </div>
           </div>
           <div class="row">
-            <div class="col-12">
-              <q-separator />
-              <q-list bordered class="rounded-borders">
-                <q-expansion-item
-                  v-for="calc in calcs"
-                  expand-separator
-                  icon="calculate"
-                  :key="calc.id"
-                  :label="calc.label"
-                >
-                  <q-card>
-                    <q-card-section :key="calc.latex">
-                      {{ calc.latex }}
-                    </q-card-section>
-                  </q-card>
-                </q-expansion-item>
-              </q-list>
-            </div>
+            <q-list bordered class="rounded-borders col-12">
+              <q-expansion-item label="Medidas de posição e disperção">
+                <q-separator />
+                <q-list bordered class="rounded-borders">
+                  <q-expansion-item
+                    v-for="calc in calcs"
+                    expand-separator
+                    icon="calculate"
+                    :key="calc.id"
+                    :label="calc.label"
+                  >
+                    <q-card>
+                      <q-card-section :key="calc.latex">
+                        {{ calc.latex }}
+                      </q-card-section>
+                    </q-card>
+                  </q-expansion-item>
+                </q-list>
+              </q-expansion-item>
+              <q-expansion-item label="Distribuição de frequência">
+                <table style="width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>Descrição</th>
+                      <th>Absoluta</th>
+                      <th>Relativa</th>
+                    </tr>
+                  </thead>
+                  <tr v-for="(value, index) in frequency" :key="index">
+                    <td>{{ index }}</td>
+                    <td>{{ value.absolute }}</td>
+                    <td>{{ value.relative }}</td>
+                  </tr>
+                </table>
+              </q-expansion-item>
+            </q-list>
           </div>
         </div>
       </div>
     </div>
   </q-page>
 </template>
-
+<style scoped>
+h2 {
+  font-size: 21px;
+  font-weight: bold;
+}
+</style>
 <script>
 export default {
   name: "PageIndex",
@@ -57,7 +80,7 @@ export default {
       weights: [],
       latex: "",
       calcs: [],
-      resultado: ""
+      frequency: {}
     };
   },
   created() {
@@ -66,8 +89,7 @@ export default {
       this.reRender();
     });
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     input(input) {
       this.inputs = input.split(",");
@@ -99,13 +121,32 @@ export default {
       let mediana = this.mediana();
       let moda = this.moda();
       let variancia = this.variancia();
+      let desvio = this.desvio();
       this.calcs = [
-        {label: 'Média: '  + media.result, id: 'media', latex: media.latex},
-        {label: 'Média Ponderada: '  + mediaPonderada.result, id: 'media-ponderada', latex: mediaPonderada.latex},
-        {label: 'Médiana: '  + mediana.result, id: 'mediana', latex: mediana.latex},
-        {label: 'Moda: '  + moda.result, id: 'moda', latex: moda.latex},
-        {label: 'Variância: '  + variancia.result, id: 'variancia', latex: variancia.latex},
+        { label: "Média: " + media.result, id: "media", latex: media.latex },
+        {
+          label: "Média Ponderada: " + mediaPonderada.result,
+          id: "media-ponderada",
+          latex: mediaPonderada.latex
+        },
+        {
+          label: "Médiana: " + mediana.result,
+          id: "mediana",
+          latex: mediana.latex
+        },
+        { label: "Moda: " + moda.result, id: "moda", latex: moda.latex },
+        {
+          label: "Variância: " + variancia.result,
+          id: "variancia",
+          latex: variancia.latex
+        },
+        {
+          label: "Desvio Padrão: " + desvio.result,
+          id: "desvio",
+          latex: desvio.latex
+        }
       ];
+      this.calcFrequency();
     },
     saveInputs() {
       window.localStorage.input = this.input;
@@ -133,12 +174,11 @@ export default {
           total += valor;
           calculo.push(this.inputs[index]);
         }
-      };
+      }
       var tamanho = this.inputs.length;
       var resultado = total / tamanho;
-      let latex =
-        "$$\\text{Quantidade de valores (n): " + tamanho + ".}\\\\$$";
-      
+      let latex = "$$\\text{Quantidade de valores (n): " + tamanho + ".}\\\\$$";
+
       if (tamanho == 0) {
         return {
           result: 0,
@@ -157,7 +197,7 @@ export default {
       return {
         result: resultado,
         latex: latex
-        };
+      };
     },
     mediaPonderada: function() {
       let total = 0;
@@ -165,15 +205,17 @@ export default {
       let solution = [];
       for (let index in this.inputs) {
         const input = parseInt(this.inputs[index]);
-        const weight = ('undefined' !== typeof this.weights[index]) ? parseInt(this.weights[index]) : 1;
+        const weight =
+          "undefined" !== typeof this.weights[index]
+            ? parseInt(this.weights[index])
+            : 1;
         total += input * weight;
         totalPeso += weight;
         solution.push(input + "*" + weight);
-      };
+      }
       const resultado = total / totalPeso;
       const tamanho = this.inputs.length;
-      let latex =
-        "$$\\text{Quantidade de valores (n): " + tamanho + ".}\\\\$$";
+      let latex = "$$\\text{Quantidade de valores (n): " + tamanho + ".}\\\\$$";
       latex +=
         "$$\\underline{x} = \\frac{\\sum_{i=1}^{n} x_i p_i}{\\sum_{i=1}^{n} p_i}\\\\$$";
       latex +=
@@ -270,74 +312,94 @@ export default {
       return {
         result: resultado.toString(),
         latex: "$$" + passos.join("") + "$$"
-      }
+      };
     },
 
     variancia: function() {
       let total = 0;
-      let latex = '$$\\text {Calculando a média}(\\underline{x})$$';
+      let latex = "$$\\text {Calculando a média}(\\underline{x})$$";
       let media = this.media();
       latex += media.latex;
       let calculo = [];
-      
+
       for (let index in this.inputs) {
         let entrada = this.inputs[index];
         let valor = parseFloat(entrada);
-        total = total + (Math.pow(valor - media.result, 2));
-        calculo.push('(' + valor + ' - ' + media.result + ')^2');
+        total = total + Math.pow(valor - media.result, 2);
+        calculo.push("(" + valor + " - " + media.result + ")^2");
       }
 
-      let resultado = total / (this.inputs.length - 1); 
-      latex += '$$\\text {Agora vamos calcular a variância da amostra }(S^2)$$';
-      latex += '$$S^2 = \\frac{\\sum_{i=1}^{n} (x_i-\\underline{x})^2}{n-1}\\\\$$'; 
-      latex += '$$S^2 = \\frac{' + calculo.join('+', calculo) + '}{' + this.inputs.length + '-1}\\\\$$';
-      latex += '$$S^2 = ' + resultado + '$$';
+      let resultado = total / (this.inputs.length - 1);
+      latex += "$$\\text {Agora vamos calcular a variância da amostra }(S^2)$$";
+      latex +=
+        "$$S^2 = \\frac{\\sum_{i=1}^{n} (x_i-\\underline{x})^2}{n-1}\\\\$$";
+      latex +=
+        "$$S^2 = \\frac{" +
+        calculo.join("+", calculo) +
+        "}{" +
+        this.inputs.length +
+        "-1}\\\\$$";
+      latex += "$$S^2 = " + resultado + "$$";
       return {
         result: resultado,
         latex: latex
-      }
+      };
     },
 
     desvio: function() {
-      this.resultado = Math.sqrt(this.variancia);
-      this.latex += "$$\\text {E por último o Desvio Padrão}(S)$$";
-      this.latex += "$$ S=\\sqrt{S^2}\\\\$$";
-      this.latex +=
-        "$$S=\\sqrt{" + this.variancia + "}=" + this.resultado + "$$";
+      let variancia = this.variancia();
+      let resultado = Math.sqrt(variancia.result);
+      let latex = variancia.latex;
+      latex += "$$\\text {E por último o Desvio Padrão}(S)$$";
+      latex += "$$ S=\\sqrt{S^2}\\\\$$";
+      latex += "$$S=\\sqrt{" + variancia.result + "}=" + resultado + "$$";
+      return {
+        result: resultado,
+        latext: latex
+      };
+    },
+
+    calcFrequency() {
+      this.frequency = {};
+      this.frequenciaAbsoluta();
+      this.frequenciaRelativa();
     },
     frequenciaAbsoluta: function() {
-      var totais = {};
-      for (index in this.inputs) {
+      for (let index in this.inputs) {
         let entrada = this.inputs[index];
-        let descricao = entrada.descricao;
-        totais[descricao] =
-          (totais[descricao] || 0) + parseFloat(entrada.quantidade);
+        if ("undefined" === typeof this.frequency[entrada]) {
+          this.frequency[entrada] = {
+            relative: 0,
+            absolute: 0
+          };
+        }
+        this.frequency[entrada].absolute =
+          this.frequency[entrada].absolute + parseFloat(this.weights[index]);
       }
-      return totais;
     },
+
     total: function() {
       var total = 0;
-      for (index in this.inputs) {
-        let entrada = this.inputs[index];
-        total += parseFloat(entrada.quantidade);
+      for (let index in this.weights) {
+        total += parseFloat(this.weights[index]);
       }
       return total;
     },
+
     frequenciaRelativa() {
-      var totais = {};
-      var total = this.total;
-      this.latex = "$$ f_i= \\frac {N_i}{N}\\\\$$";
-      this.latex +=
+      let total = this.total();
+      let latex = "$$ f_i= \\frac {N_i}{N}\\\\$$";
+      latex +=
         "$$\\text {Onde } N_i \\text { é a frequência absoluta e N é o número total de elementos}\\\\$$";
-      for (index in this.inputs) {
+      for (let index in this.inputs) {
         let entrada = this.inputs[index];
-        let descricao = entrada.descricao;
-        let quantidade = parseFloat(entrada.quantidade);
+        let quantidade = parseFloat(this.weights[index]);
         if (quantidade) {
-          totais[descricao] = this.absoluta[descricao] / total;
+          this.frequency[entrada].relative =
+            this.frequency[entrada].absolute / total;
           this.latex +=
             "$$f_\\text{" +
-            descricao +
+            entrada +
             "}= \\frac {" +
             quantidade +
             "}{" +
@@ -345,7 +407,6 @@ export default {
             "}\\\\ $$";
         }
       }
-      return totais;
     }
   }
 };
