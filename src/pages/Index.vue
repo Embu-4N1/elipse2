@@ -2,8 +2,8 @@
   <q-page class="flex flex-center">
     <div class="q-pa-md full-width">
       <div class="row">
-        <h2>Problema</h2>
-        <q-editor v-model="editor" min-height="5rem" class="col-12"/>
+        <h2>Enunciado</h2>
+        <q-editor v-model="statement" min-height="5rem" class="col-12"/>
       </div>
       <div class="row">
         <div class="col-12">
@@ -79,7 +79,7 @@ export default {
   name: "PageIndex",
   data: function() {
     return {
-      editor: "",
+      statement: "",
       input: "",
       inputs: [],
       weight: "",
