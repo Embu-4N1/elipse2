@@ -3,7 +3,7 @@
     <div class="q-pa-md full-width">
       <div class="row">
         <h2>Enunciado</h2>
-        <q-editor v-model="statement" min-height="5rem" class="col-12"/>
+        <q-editor v-model="statement" min-height="5rem" class="col-12" />
       </div>
       <div class="row">
         <div class="col-12">
@@ -106,6 +106,7 @@ export default {
       this.saveInputs();
       this.calc();
     },
+
     weight(input) {
       this.weights = input.split(",");
       if (input.endsWith(",")) {
@@ -113,6 +114,10 @@ export default {
       }
       this.saveInputs();
       this.calc();
+    },
+
+    statement(input) {
+      this.saveInputs();
     },
     calcs() {
       this.$nextTick().then(() => {
@@ -154,10 +159,13 @@ export default {
       ];
       this.calcFrequency();
     },
+
     saveInputs() {
       window.localStorage.input = this.input;
       window.localStorage.weight = this.weight;
+      window.localStorage.statement = this.statement;
     },
+
     reloadInputs() {
       if (window.localStorage.input) {
         this.input = window.localStorage.input;
@@ -165,7 +173,11 @@ export default {
       if (window.localStorage.weight) {
         this.weight = window.localStorage.weight;
       }
+      if (window.localStorage.statement) {
+        this.statement = window.localStorage.statement;
+      }
     },
+
     reRender() {
       if (window.MathJax) {
         window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
