@@ -2,6 +2,10 @@
   <q-page class="flex flex-center">
     <div class="q-pa-md full-width">
       <div class="row">
+        <h2>Problema</h2>
+        <q-editor v-model="editor" min-height="5rem" class="col-12"/>
+      </div>
+      <div class="row">
         <div class="col-12">
           <h2>Valores</h2>
           <div class="row">
@@ -21,6 +25,7 @@
             </div>
           </div>
           <div class="row">
+            <h2>Resultados</h2>
             <q-list bordered class="rounded-borders col-12">
               <q-expansion-item label="Medidas de posição e disperção">
                 <q-separator />
@@ -41,20 +46,20 @@
                 </q-list>
               </q-expansion-item>
               <q-expansion-item label="Distribuição de frequência">
-                <table style="width: 100%;">
+                <q-markup-table>
                   <thead>
                     <tr>
-                      <th>Descrição</th>
-                      <th>Absoluta</th>
-                      <th>Relativa</th>
+                      <th class="text-left">Descrição</th>
+                      <th class="text-left">Absoluta</th>
+                      <th class="text-left">Relativa</th>
                     </tr>
                   </thead>
                   <tr v-for="(value, index) in frequency" :key="index">
-                    <td>{{ index }}</td>
-                    <td>{{ value.absolute }}</td>
-                    <td>{{ value.relative }}</td>
+                    <td class="text-right">{{ index }}</td>
+                    <td class="text-right">{{ value.absolute }}</td>
+                    <td class="text-right">{{ value.relative }}</td>
                   </tr>
-                </table>
+                </q-markup-table>
               </q-expansion-item>
             </q-list>
           </div>
@@ -74,6 +79,7 @@ export default {
   name: "PageIndex",
   data: function() {
     return {
+      editor: "",
       input: "",
       inputs: [],
       weight: "",
