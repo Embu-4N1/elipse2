@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function(/* ctx */) {
+module.exports = function( ctx ) {
   return {
     runtimeCompiler: true,
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -42,7 +42,9 @@ module.exports = function(/* ctx */) {
     build: {
       vueCompiler: true,
       vueRouterMode: "hash", // available values: 'hash', 'history'
-
+      env: {
+        API: ctx.dev ? 'https://localhost:8448' : 'https://elipse.chaves.in'
+      },
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -116,9 +118,10 @@ module.exports = function(/* ctx */) {
         clientsClaim: true
       }, // only for GenerateSW
       manifest: {
-        name: `Elipse`,
-        short_name: `Elipse`,
-        description: `Elipse`,
+        start_url: "/",
+        name: "Elipse",
+        short_name: "Elipse",
+        description: "Elipse",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",

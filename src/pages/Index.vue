@@ -89,14 +89,30 @@ export default {
       frequency: {}
     };
   },
+
   created() {
-    this.reloadInputs();
+    if (this.exampleId) {
+      this.loadExample(this.exampleId);
+    } else {
+      this.reloadInputs();
+    }
     this.$nextTick().then(() => {
       this.reRender();
     });
   },
-  computed: {},
+
+  beforeRouteUpdate(to, from, next) {
+    this.loadExample(to.params.example);
+    next();
+  },
+
+  computed: {
+    exampleId() {
+      return this.$route.params.example;
+    }
+  },
   watch: {
+    $route: "updateExample",
     input(input) {
       this.inputs = input.split(",");
       if (input.endsWith(",")) {
@@ -126,6 +142,20 @@ export default {
     }
   },
   methods: {
+    updateExample() {
+      this.loadExample(this.exampleId);
+    },
+
+    async loadExample(id) {
+      const response = await fetch(process.env.API + '/api/example/' + id);
+      if (response.ok) {
+        let example = await response.json();
+        this.input = example.input;
+        this.weight = example.weight;
+        this.statement = example.statement;
+      }
+    },
+
     calc() {
       let media = this.media();
       let mediaPonderada = this.mediaPonderada();
