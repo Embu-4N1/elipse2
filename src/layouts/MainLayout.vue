@@ -41,40 +41,45 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
+import EssentialLink from "components/EssentialLink.vue";
 
 const linksData = [
   {
-    title: 'Home',
+    title: "Home",
     // caption: '/',
-    icon: 'home',
-    link: '/'
-  }, {
-    title: 'Exemplos',
+    icon: "home",
+    link: "/"
+  },
+  {
+    title: "Exemplos",
     // caption: 'exemplos',
-    icon: 'book',
-    link: '/#/examples'
+    icon: "book",
+    link: "/#/examples"
   }
 ];
 
 export default {
-  name: 'MainLayout',
+  name: "MainLayout",
   components: { EssentialLink },
-  data () {
+  data() {
     return {
       leftDrawerOpen: false,
       essentialLinks: linksData,
-      computed: { 
+      computed: {
         example() {
           return $route.params.example;
         }
       }
-    }
+    };
   },
   beforeRouteUpdate(to, from, next) {
     // this.loadExample(this.exampleId);
     next();
   },
-
-}
+  meta: {
+    noscript: {
+      default: "Enable javascript, please with cheese!"
+    }
+  }
+};
 </script>
