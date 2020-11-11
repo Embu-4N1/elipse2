@@ -46,15 +46,18 @@ import EssentialLink from "components/EssentialLink.vue";
 const linksData = [
   {
     title: "Home",
-    // caption: '/',
     icon: "home",
     link: "/"
   },
   {
     title: "Exemplos",
-    // caption: 'exemplos',
     icon: "book",
     link: "/#/examples"
+  },
+  {
+    title: "Histórico",
+    icon: "history",
+    link: "/#/history"
   }
 ];
 

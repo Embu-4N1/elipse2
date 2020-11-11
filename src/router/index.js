@@ -8,8 +8,8 @@ import Mathfield from 'mathlive/dist/vue-mathlive.mjs';
 
 import VueMathjax from 'vue-mathjax';
 
-Vue.use(VueMathjax)
-Vue.use(VueRouter)
+Vue.use(VueMathjax);
+Vue.use(VueRouter);
 Vue.use(Mathfield, MathLive);
 
 /*
