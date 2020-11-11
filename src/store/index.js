@@ -20,6 +20,16 @@ export default function (/* { ssrContext } */) {
       // example
     },
 
+    state: {
+      history: {},
+      inputs: [],
+      weights: [],
+    },
+    mutations: {
+      CHANGE_HISTORY(state, payload) {
+        state.history = payload;
+      }
+    },
     // enable strict mode (adds overhead!)
     // for dev mode only
     strict: process.env.DEV

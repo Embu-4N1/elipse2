@@ -75,6 +75,8 @@ h2 {
 }
 </style>
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "PageIndex",
   data: function() {
@@ -86,13 +88,16 @@ export default {
       weights: [],
       latex: "",
       calcs: [],
-      frequency: {}
+      frequency: {},
+      history: []
     };
   },
 
   created() {
     if (this.exampleId) {
       this.loadExample(this.exampleId);
+    } else if (this.paramHistory) {
+      this.loadHistory(this.paramHistory);
     } else {
       this.reloadInputs();
     }
@@ -108,19 +113,37 @@ export default {
 
   computed: {
     exampleId() {
+      // let id = parseInt(Number.isNaN(this.$route.params.example));
+      // console.log(this.$route.params.example, id);
+      // if (Number.isNaN(id)) {
+      //   return false;
+      // }
       return this.$route.params.example;
+    },
+    paramHistory() {
+      return this.$route.params.history;
     }
   },
   watch: {
     $route: "updateExample",
     input(input) {
-      this.inputs = input.split(",");
+      let inputs = input.split(",");
       if (input.endsWith(",")) {
-        this.inputs.splice(this.inputs.length - 1);
+        inputs.splice(inputs.length - 1);
       }
+      if (JSON.stringify(inputs) != JSON.stringify(this.inputs)) {
+        this.inputs = inputs;
+        this.saveInputs();
+        this.calc();
+      }
+    },
 
-      this.saveInputs();
-      this.calc();
+    inputs() {
+      this.saveHistory();
+    },
+
+    weights(){
+      this.saveHistory();
     },
 
     weight(input) {
@@ -135,6 +158,7 @@ export default {
     statement(input) {
       this.saveInputs();
     },
+
     calcs() {
       this.$nextTick().then(() => {
         this.reRender();
@@ -147,13 +171,21 @@ export default {
     },
 
     async loadExample(id) {
-      const response = await fetch(process.env.API + '/api/example/' + id);
+      const response = await fetch(process.env.API + "/api/example/" + id);
       if (response.ok) {
         let example = await response.json();
         this.input = example.input;
         this.weight = example.weight;
         this.statement = example.statement;
       }
+    },
+
+    loadHistory(history) {
+        let example = JSON.parse(decodeURIComponent(history));
+        this.input = example.input;
+        this.weight = example.weight;
+        this.statement = example.statement;
+
     },
 
     calc() {
@@ -171,7 +203,7 @@ export default {
           latex: mediaPonderada.latex
         },
         {
-          label: "Médiana: " + mediana.result,
+          label: "Mediana: " + mediana.result,
           id: "mediana",
           latex: mediana.latex
         },
@@ -196,6 +228,18 @@ export default {
       window.localStorage.statement = this.statement;
     },
 
+    saveHistory() {
+      let data = {
+        input: this.input,
+        weight: this.weight,
+        statement: this.statement
+      };
+      let history = JSON.parse(window.localStorage.history);
+      this.history = history.filter(value => JSON.stringify(value) != JSON.stringify(data));
+
+      this.history.push(data);
+      window.localStorage.history = JSON.stringify(this.history);
+    },
     reloadInputs() {
       if (window.localStorage.input) {
         this.input = window.localStorage.input;
@@ -205,6 +249,9 @@ export default {
       }
       if (window.localStorage.statement) {
         this.statement = window.localStorage.statement;
+      }
+      if (window.localStorage.history) {
+        this.history = JSON.parse(window.localStorage.history);
       }
     },
 
@@ -369,21 +416,27 @@ export default {
       let media = this.media();
       latex += media.latex;
       let calculo = [];
+      let results = []
 
       for (let index in this.inputs) {
         let entrada = this.inputs[index];
         let valor = parseFloat(entrada);
-        total = total + Math.pow(valor - media.result, 2);
-        calculo.push("(" + valor + " - " + media.result + ")^2");
+        let result = Math.pow(valor - media.result, 2);
+        total = total + result;
+        let under = parseInt(index) + 1;
+        calculo.push(`\\text{Para }x_${under}=${valor}, (${valor} - ${media.result})^2 = ${result} \\\\`);
+        results.push(result);
       }
+      latex += "$$\\text{Resolvendo }(x_i-\\underline{x})^2: $$";
+      latex += `$$${calculo.join("")}$$`;
 
       let resultado = total / (this.inputs.length - 1);
-      latex += "$$\\text {Agora vamos calcular a variância da amostra }(S^2)$$";
+      latex += "$$\\text{A variância da amostra }(S^2)$$";
       latex +=
         "$$S^2 = \\frac{\\sum_{i=1}^{n} (x_i-\\underline{x})^2}{n-1}\\\\$$";
       latex +=
         "$$S^2 = \\frac{" +
-        calculo.join("+", calculo) +
+        results.join("+") +
         "}{" +
         this.inputs.length +
         "-1}\\\\$$";
@@ -403,7 +456,7 @@ export default {
       latex += "$$S=\\sqrt{" + variancia.result + "}=" + resultado + "$$";
       return {
         result: resultado,
-        latext: latex
+        latex: latex
       };
     },
 
@@ -412,6 +465,7 @@ export default {
       this.frequenciaAbsoluta();
       this.frequenciaRelativa();
     },
+
     frequenciaAbsoluta: function() {
       for (let index in this.inputs) {
         let entrada = this.inputs[index];
