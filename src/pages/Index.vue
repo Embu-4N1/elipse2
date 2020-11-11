@@ -1,10 +1,10 @@
 <template>
   <q-page class="flex flex-center">
     <div class="q-pa-md full-width">
-      <div class="row">
+      <!--div class="row">
         <h2>Enunciado</h2>
         <q-editor v-model="statement" min-height="5rem" class="col-12" />
-      </div>
+      </div-->
       <div class="row">
         <div class="col-12">
           <h2>Valores</h2>
