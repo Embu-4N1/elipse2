@@ -234,7 +234,7 @@ export default {
         weight: this.weight,
         statement: this.statement
       };
-      let history = JSON.parse(window.localStorage.history);
+      let history = window.localStorage.history ? JSON.parse(window.localStorage.history) : [];
       this.history = history.filter(value => JSON.stringify(value) != JSON.stringify(data));
 
       this.history.push(data);
