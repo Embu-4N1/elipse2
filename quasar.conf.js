@@ -43,7 +43,7 @@ module.exports = function( ctx ) {
       vueCompiler: true,
       vueRouterMode: "hash", // available values: 'hash', 'history'
       env: {
-        API: ctx.dev ? 'https://localhost:8448' : 'https://elipse.chaves.in'
+        API: ctx.dev ? 'https://localhost:8448' : 'https://elipse2.chaves.in'
       },
       // transpile: false,
 
