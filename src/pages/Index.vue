@@ -294,16 +294,21 @@ export default {
         latex: latex
       };
     },
+
+    getWeight: function(index) {
+      return ("undefined" !== typeof this.weights[index] && this.weights[index] !== "")
+      ? parseFloat(this.weights[index])
+      : 1;
+
+    },
+
     mediaPonderada: function() {
       let total = 0;
       let totalPeso = 0;
       let solution = [];
       for (let index in this.inputs) {
         const input = parseInt(this.inputs[index]);
-        const weight =
-          "undefined" !== typeof this.weights[index]
-            ? parseInt(this.weights[index])
-            : 1;
+        const weight = this.getWeight(index);
         total += input * weight;
         totalPeso += weight;
         solution.push(input + "*" + weight);
@@ -475,15 +480,14 @@ export default {
             absolute: 0
           };
         }
-        this.frequency[entrada].absolute =
-          this.frequency[entrada].absolute + parseFloat(this.weights[index]);
+        this.frequency[entrada].absolute = this.frequency[entrada].absolute + this.getWeight(index);
       }
     },
 
     total: function() {
       var total = 0;
-      for (let index in this.weights) {
-        total += parseFloat(this.weights[index]);
+      for (let index in this.inputs) {
+        total += this.getWeight(index);
       }
       return total;
     },
@@ -495,7 +499,7 @@ export default {
         "$$\\text {Onde } N_i \\text { é a frequência absoluta e N é o número total de elementos}\\\\$$";
       for (let index in this.inputs) {
         let entrada = this.inputs[index];
-        let quantidade = parseFloat(this.weights[index]);
+        let quantidade = this.getWeight(index);
         if (quantidade) {
           this.frequency[entrada].relative =
             this.frequency[entrada].absolute / total;

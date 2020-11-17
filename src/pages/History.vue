@@ -58,7 +58,6 @@ export default {
     },
 
     showHistory(history) {
-      console.log(history);
       this.CHANGE_HISTORY(history);
     },
     async loadHistory() {
