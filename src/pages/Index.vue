@@ -60,6 +60,11 @@
                     <td class="text-right">{{ value.relative }}</td>
                   </tr>
                 </q-markup-table>
+                    <q-card>
+                      <q-card-section :key="frequencyLatex">
+                        {{ frequencyLatex }}
+                      </q-card-section>
+                    </q-card>
               </q-expansion-item>
             </q-list>
           </div>
@@ -89,6 +94,7 @@ export default {
       latex: "",
       calcs: [],
       frequency: {},
+      frequencyLatex: {},
       history: []
     };
   },
@@ -494,16 +500,17 @@ export default {
 
     frequenciaRelativa() {
       let total = this.total();
-      let latex = "$$ f_i= \\frac {N_i}{N}\\\\$$";
-      latex +=
-        "$$\\text {Onde } N_i \\text { é a frequência absoluta e N é o número total de elementos}\\\\$$";
+      let latex = 
+        "$$\\text{Frequência relativa:}\\\\$$" + 
+        "$$ f_i= \\frac {N_i}{N}\\\\$$" + 
+        "$$\\text {Onde } N_i \\text { é a frequência absoluta} $$$$ \\text{e N é o número total de elementos}\\\\$$";
       for (let index in this.inputs) {
         let entrada = this.inputs[index];
         let quantidade = this.getWeight(index);
         if (quantidade) {
           this.frequency[entrada].relative =
             this.frequency[entrada].absolute / total;
-          this.latex +=
+          latex +=
             "$$f_\\text{" +
             entrada +
             "}= \\frac {" +
@@ -513,6 +520,7 @@ export default {
             "}\\\\ $$";
         }
       }
+      this.frequencyLatex = latex;
     }
   }
 };
